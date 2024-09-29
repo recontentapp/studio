@@ -24,6 +24,8 @@
     "cors": "2.8.5",
     "express": "4.21.0",
     "glob": "11.0.0",
+    "json-schema-faker": "0.5.6",
+    "json-schema-to-typescript": "15.0.2",
     "mjml": "4.15.3",
     "mustache": "4.2.0",
     "open": "10.1.0",
@@ -32,6 +34,7 @@
   "devDependencies": {
     "@types/cors": "2.8.17",
     "@types/express": "5.0.0",
+    "@types/json-schema-faker": "0.5.4",
     "@types/mjml": "4.7.4",
     "@types/mustache": "4.2.5",
     "@types/node": "20.12.7",

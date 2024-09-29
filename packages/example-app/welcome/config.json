@@ -1,3 +1,24 @@
 {
-  "title": "Welcome"
+  "title": "Welcome",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "features": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "example": "Feature 1"
+            }
+          },
+          "additionalProperties": false,
+          "required": ["title"]
+        }
+      }
+    },
+    "additionalProperties": false,
+    "required": ["features"]
+  }
 }

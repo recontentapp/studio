@@ -2,6 +2,7 @@ import { Box, Flex, SegmentedControl, Select, Text } from '@radix-ui/themes'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { TemplateSnapshot } from '../../../cli/src/studio/types'
 import { useWindowResize } from '../hooks/useWindowResize'
+import { EditorSettings } from './EditorSettings'
 import { ResizableIframe, Size } from './ResizableIframe'
 
 interface Props {
@@ -112,9 +113,13 @@ export const Editor = ({ template }: Props) => {
           gap="3"
           direction="row"
         >
-          <Text size="2" weight="medium">
-            {template.title ?? template.path}
-          </Text>
+          <Flex direction="row" gap="2" align="center">
+            <Text size="2" weight="medium">
+              {template.title ?? template.path}
+            </Text>
+
+            <EditorSettings template={template} />
+          </Flex>
 
           <Flex gap="5" align="center">
             <Flex gap="2" align="center">

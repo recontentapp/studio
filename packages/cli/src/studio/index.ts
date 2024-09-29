@@ -30,10 +30,14 @@ export class Studio {
     app.use(cors())
     app.use(express.static('public'))
 
-    app.get('/templates', (req, res) => {
+    app.get('/templates', async (req, res) => {
+      const templates = await Promise.all(
+        this.templates.map(template => template.getSnapshot()),
+      )
+
       res.json({
         workspacePath: this.workspacePath,
-        data: this.templates.map(template => template.getSnapshot()),
+        data: templates,
       })
     })
 
@@ -65,34 +69,37 @@ export class Studio {
       .watch(workspacePath, {
         persistent: false,
       })
-      .on('add', filePath => {
+      .on('add', async filePath => {
         if (filePath.endsWith('.mjml')) {
           const template = new Template(workspacePath, filePath)
           this.templates.push(template)
+          const snapshot = await template.getSnapshot()
           this.eventSourceListener.send({
             type: 'template-updated',
-            template: template.getSnapshot(),
+            template: snapshot,
           })
           return
         }
 
         if (filePath.endsWith('.json')) {
-          this.templates.forEach(template => {
+          this.templates.forEach(async template => {
             if (template.isFileUpdateRelevant(filePath)) {
+              const snapshot = await template.getSnapshot()
               this.eventSourceListener.send({
                 type: 'template-updated',
-                template: template.getSnapshot(),
+                template: snapshot,
               })
             }
           })
         }
       })
       .on('change', filePath => {
-        this.templates.forEach(template => {
+        this.templates.forEach(async template => {
           if (template.isFileUpdateRelevant(filePath)) {
+            const snapshot = await template.getSnapshot()
             this.eventSourceListener.send({
               type: 'template-updated',
-              template: template.getSnapshot(),
+              template: snapshot,
             })
           }
         })
@@ -115,11 +122,12 @@ export class Studio {
           return
         }
 
-        this.templates.forEach(template => {
+        this.templates.forEach(async template => {
           if (template.isFileUpdateRelevant(filePath)) {
+            const snapshot = await template.getSnapshot()
             this.eventSourceListener.send({
               type: 'template-updated',
-              template: template.getSnapshot(),
+              template: snapshot,
             })
           }
         })

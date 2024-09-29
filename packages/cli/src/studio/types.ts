@@ -1,25 +1,26 @@
 interface Preview {
-  id: string;
-  html: string | null;
+  id: string
+  html: string | null
 }
 
 export interface TemplateSnapshot {
-  title: string | null;
-  path: string;
-  previews: Preview[];
-  errorMessages: string[];
+  title: string | null
+  path: string
+  previews: Preview[]
+  errorMessages: string[]
+  schemaInterface: string | null
 }
 
 interface TemplateUpdatedEvent {
-  type: "template-updated";
-  template: TemplateSnapshot;
+  type: 'template-updated'
+  template: TemplateSnapshot
 }
 
 interface TemplateDeletedEvent {
-  type: "template-deleted";
+  type: 'template-deleted'
   template: {
     path: string
-  };
+  }
 }
 
 export type Event = TemplateUpdatedEvent | TemplateDeletedEvent
