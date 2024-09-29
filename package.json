@@ -1,0 +1,24 @@
+{
+  "name": "recontent",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "pre-commit": "lint-staged",
+    "lockfile:lint": "npx yarn-deduplicate --fail --list -s highest yarn.lock",
+    "lockfile:fix": "npx yarn-deduplicate -s highest yarn.lock",
+    "prepare": "husky",
+    "prettier:lint": "prettier -c .",
+    "prettier:fix": "prettier -w .",
+    "dev:cli": "yarn workspace @recontentapp/studio dev",
+    "dev:app": "yarn workspace app dev",
+    "build:app": "yarn workspace app build && rm -rf packages/cli/public && cp -r packages/app/dist packages/cli/public"
+  },
+  "devDependencies": {
+    "husky": "9.0.11",
+    "lint-staged": "15.2.2",
+    "prettier": "3.3.1",
+    "prettier-plugin-organize-imports": "3.2.4"
+  }
+}

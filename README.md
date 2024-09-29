@@ -1,2 +1,4 @@
-# studio
-📫 A local environment to develop email templates
+# Recontent.app Studio
+
+> 📫 A local environment to develop email templates
+
