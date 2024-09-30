@@ -64,7 +64,6 @@ export const ResizableIframe = ({ size, srcDoc, onSizeChange }: Props) => {
   return (
     <div
       style={{
-        width: '100%',
         padding: 30,
         display: 'flex',
         alignItems: 'center',

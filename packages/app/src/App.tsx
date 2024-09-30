@@ -39,44 +39,42 @@ export const App = () => {
   return (
     <Container>
       <Sidebar>
-        <Flex direction="column" gap="3">
-          {templates.map((template, index) => (
-            <RadioCards.Root
-              value={currentTemplate?.path ?? ''}
-              size="1"
-              key={template.path}
-              variant="surface"
-              onValueChange={() => setCurrentIndex(index)}
-            >
-              <RadioCards.Item value={template.path}>
-                <Flex width="100%" direction="column">
-                  <Text
-                    weight="medium"
-                    size="2"
-                    style={{
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }}
-                  >
-                    {template.title ?? 'Untitled'}
-                  </Text>
-                  <Text
-                    size="1"
-                    style={{
-                      color: 'var(--gray-10)',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }}
-                  >
-                    {template.path}
-                  </Text>
-                </Flex>
-              </RadioCards.Item>
-            </RadioCards.Root>
-          ))}
-        </Flex>
+        {templates.map((template, index) => (
+          <RadioCards.Root
+            value={currentTemplate?.path ?? ''}
+            size="1"
+            key={template.path}
+            variant="surface"
+            onValueChange={() => setCurrentIndex(index)}
+          >
+            <RadioCards.Item value={template.path}>
+              <Flex width="100%" direction="column">
+                <Text
+                  weight="medium"
+                  size="2"
+                  style={{
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
+                  {template.title ?? 'Untitled'}
+                </Text>
+                <Text
+                  size="1"
+                  style={{
+                    color: 'var(--gray-10)',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
+                  {template.path}
+                </Text>
+              </Flex>
+            </RadioCards.Item>
+          </RadioCards.Root>
+        ))}
       </Sidebar>
 
       <Flex flexGrow="1" height="100%">

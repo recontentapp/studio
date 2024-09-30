@@ -1,14 +1,15 @@
 interface Preview {
   id: string
-  html: string | null
+  html: string
 }
 
 export interface TemplateSnapshot {
   title: string | null
   path: string
   previews: Preview[]
-  errorMessages: string[]
   schemaInterface: string | null
+  errorMessages: string[]
+  warningMessages: string[]
 }
 
 interface TemplateUpdatedEvent {

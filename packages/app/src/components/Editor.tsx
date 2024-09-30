@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { TemplateSnapshot } from '../../../cli/src/studio/types'
 import { useWindowResize } from '../hooks/useWindowResize'
 import { EditorSettings } from './EditorSettings'
+import { Indications } from './Indications'
 import { ResizableIframe, Size } from './ResizableIframe'
 
 interface Props {
@@ -113,12 +114,28 @@ export const Editor = ({ template }: Props) => {
           gap="3"
           direction="row"
         >
-          <Flex direction="row" gap="2" align="center">
-            <Text size="2" weight="medium">
-              {template.title ?? template.path}
-            </Text>
+          <Flex direction="row" gap="4" align="center">
+            <Flex direction="row" gap="2" align="center">
+              <Text
+                size="2"
+                weight="medium"
+                style={{
+                  maxWidth: '30vw',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                {template.title ?? template.path}
+              </Text>
 
-            <EditorSettings template={template} />
+              <EditorSettings template={template} />
+            </Flex>
+
+            <Indications
+              warningMessages={template.warningMessages}
+              errorMessages={template.errorMessages}
+            />
           </Flex>
 
           <Flex gap="5" align="center">

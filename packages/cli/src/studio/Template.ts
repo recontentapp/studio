@@ -24,7 +24,7 @@ interface VariablesBag {
 
 interface Preview {
   id: string
-  html: string | null
+  html: string
 }
 
 interface TemplateSnapshot {
@@ -33,12 +33,14 @@ interface TemplateSnapshot {
   schema: AnySchema | null
   schemaInterface: string | null
   previews: Preview[]
+  warningMessages: string[]
   errorMessages: string[]
 }
 
 interface ConfigResult {
   title: string | null
   schema: AnySchema | null
+  warning: string | null
   error: string | null
 }
 
@@ -73,7 +75,8 @@ export class Template {
       return {
         title: null,
         schema: null,
-        error: `${relativePath} does not exist`,
+        error: null,
+        warning: `${relativePath} does not exist`,
       }
     }
 
@@ -82,6 +85,7 @@ export class Template {
       return {
         title: null,
         schema: null,
+        warning: null,
         error: `${relativePath} is not a valid JSON file`,
       }
     }
@@ -91,6 +95,7 @@ export class Template {
     return {
       title: configContent.title ?? null,
       schema: result,
+      warning: null,
       error:
         configContent.schema && !result
           ? `Property "schema" in ${relativePath} is not a valid JSON schema`
@@ -156,28 +161,55 @@ export class Template {
 
       return mjml2html(mjmlTemplateWithVariablesAndSchema).html
     } catch (error) {
-      console.log(error)
       return null
     }
   }
 
   async getSnapshot(): Promise<TemplateSnapshot> {
+    const errorMessages: string[] = []
+    const warningMessages: string[] = []
+
     const mjmlContent = fs.readFileSync(this.mjmlPath, 'utf-8')
     const variableBags = this.getVariableBags()
 
-    const { title, schema, error } = this.getConfig()
+    const { title, schema, error, warning } = this.getConfig()
+    if (error) {
+      errorMessages.push(error)
+    }
+    if (warning) {
+      warningMessages.push(warning)
+    }
+
     const previews: Preview[] = []
 
     if (variableBags.length === 0) {
+      const preview = this.getPreview(mjmlContent, {}, schema)
+      if (!preview) {
+        errorMessages.push('Failed to render default HTML preview')
+      }
+
       previews.push({
         id: 'default',
-        html: this.getPreview(mjmlContent, {}, schema),
+        html: preview ?? '',
       })
     } else {
-      variableBags.forEach(({ id, variables }) => {
+      variableBags.forEach(({ id, variables, error }) => {
+        if (error) {
+          errorMessages.push(error)
+          return
+        }
+
+        const preview = this.getPreview(mjmlContent, variables, schema)
+        const fileName =
+          id === 'default' ? 'variables.json' : `variables.${id}.json`
+
+        if (!preview) {
+          errorMessages.push(`Failed to render HTML preview for ${fileName}`)
+        }
+
         previews.push({
           id,
-          html: this.getPreview(mjmlContent, variables, schema),
+          html: preview ?? '',
         })
       })
     }
@@ -199,7 +231,8 @@ export class Template {
       schema,
       schemaInterface,
       previews,
-      errorMessages: error ? [error] : [],
+      errorMessages,
+      warningMessages,
     }
   }
 }

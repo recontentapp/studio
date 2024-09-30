@@ -50,9 +50,13 @@ export const EditorSettings = ({ template }: Props) => {
           <DataList.Item>
             <DataList.Label minWidth="88px">Schema</DataList.Label>
             <DataList.Value>
-              <Code style={{ width: '100%', paddingLeft: 8 }}>
-                <pre>{template.schemaInterface ?? ''}</pre>
-              </Code>
+              {template.schemaInterface ? (
+                <Code style={{ width: '100%', paddingLeft: 8 }}>
+                  <pre>{template.schemaInterface}</pre>
+                </Code>
+              ) : (
+                'n/a'
+              )}
             </DataList.Value>
           </DataList.Item>
         </DataList.Root>
