@@ -1,8 +1,13 @@
 {
-  "title": "Welcome",
+  "title": "Webinar announcement",
+  "layout": "../layouts/default/template.mjml",
   "schema": {
     "type": "object",
     "properties": {
+      "link": {
+        "type": "string",
+        "example": "https://example.com"
+      },
       "features": {
         "type": "array",
         "items": {
@@ -10,7 +15,7 @@
           "properties": {
             "title": {
               "type": "string",
-              "example": "Feature 1"
+              "example": "Feature title 1"
             }
           },
           "additionalProperties": false,
@@ -19,6 +24,6 @@
       }
     },
     "additionalProperties": false,
-    "required": ["features"]
+    "required": ["features", "link"]
   }
 }

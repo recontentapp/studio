@@ -1,0 +1,42 @@
+<mjml>
+  <mj-head>
+    <mj-title>Stripe notification</mj-title>
+
+    <mj-attributes>
+      <mj-all font-family="Helvetica, sans-serif" />
+      <mj-text
+        font-weight="300"
+        font-size="14px"
+        color="#425466"
+        line-height="20px"
+        padding="0px"
+      />
+      <mj-section padding="0px" />
+      <mj-image padding="0px" />
+      <mj-column padding-top="0px" padding-bottom="0px" />
+      <mj-wrapper padding-top="0px" padding-bottom="0px" />
+      <mj-button
+        background-color="#635BFF"
+        border-radius="24px"
+        font-weight="bold"
+        inner-padding="12px 25px 12px 25px"
+        font-size="14px"
+      />
+    </mj-attributes>
+  </mj-head>
+
+  <mj-body background-color="#F1F5F9">
+    <mj-section padding="20px"></mj-section>
+
+    <mj-wrapper background-color="#ffffff">
+      {{{ content }}}
+    </mj-wrapper>
+
+    <mj-section background-color="#F6F9FC" padding="40px 64px">
+      <mj-column width="100%">
+        <mj-image align="left" src="https://raw.githubusercontent.com/recontentapp/mjml-templates/master/templates/stripe-notification/assets/gray-logo.png" alt="" width="42px" />
+      </mj-column>
+    </mj-section>
+    <mj-section padding="30px"></mj-section>
+  </mj-body>
+</mjml>

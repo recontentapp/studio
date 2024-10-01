@@ -75,7 +75,7 @@ export class Studio {
           this.templates.push(template)
           const snapshot = await template.getSnapshot()
           this.eventSourceListener.send({
-            type: 'template-updated',
+            type: 'template-added',
             template: snapshot,
           })
           return
@@ -105,6 +105,10 @@ export class Studio {
         })
       })
       .on('unlink', filePath => {
+        if (this.debugMode) {
+          this.printer.info(`File ${filePath} has been removed`)
+        }
+
         if (filePath.endsWith('.mjml')) {
           this.templates.forEach(template => {
             if (filePath.includes(template.mjmPath)) {

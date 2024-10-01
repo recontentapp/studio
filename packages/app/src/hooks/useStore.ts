@@ -34,6 +34,14 @@ export const useStore = () => {
       const event: Event = JSON.parse(message.data)
 
       switch (event.type) {
+        case 'template-added': {
+          setTemplates(templates => {
+            return [...templates, event.template]
+          })
+
+          break
+        }
+
         case 'template-updated': {
           setTemplates(templates => {
             const updatedTemplate = event.template
@@ -42,7 +50,7 @@ export const useStore = () => {
             )
 
             if (index === -1) {
-              return [...templates, updatedTemplate]
+              return templates
             }
 
             return [
@@ -57,16 +65,7 @@ export const useStore = () => {
 
         case 'template-deleted': {
           setTemplates(templates => {
-            const deletedTemplate = event.template
-            const index = templates.findIndex(
-              template => template.path === deletedTemplate.path,
-            )
-
-            if (index === -1) {
-              return templates
-            }
-
-            return [...templates.slice(0, index), ...templates.slice(index + 1)]
+            return templates.filter(t => t.path !== event.template.path)
           })
 
           break

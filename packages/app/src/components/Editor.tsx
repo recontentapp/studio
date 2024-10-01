@@ -35,16 +35,16 @@ export const Editor = ({ template }: Props) => {
 
   const currentPreview =
     previewIndex >= template.previews.length
-      ? template.previews[0]
-      : template.previews[previewIndex]
+      ? template.previews.at(0)
+      : template.previews.at(previewIndex)
 
-  if (previewIndex >= template.previews.length) {
+  if (previewIndex >= template.previews.length && previewIndex !== 0) {
     setPreviewIndex(0)
   }
 
   useEffect(() => {
     setPreviewIndex(0)
-  }, [template])
+  }, [template.path])
 
   const onPreviewChange = (value: string) => {
     const index = template.previews.findIndex(preview => preview.id === value)
@@ -147,7 +147,7 @@ export const Editor = ({ template }: Props) => {
               <Select.Root
                 size="1"
                 onValueChange={onPreviewChange}
-                value={currentPreview.id}
+                value={currentPreview?.id ?? ''}
               >
                 <Select.Trigger />
                 <Select.Content>
@@ -196,7 +196,7 @@ export const Editor = ({ template }: Props) => {
       <ResizableIframe
         size={size}
         onSizeChange={setSize}
-        srcDoc={currentPreview.html ?? ''}
+        srcDoc={currentPreview?.html ?? ''}
       />
     </Flex>
   )

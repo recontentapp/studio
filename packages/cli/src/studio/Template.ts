@@ -9,13 +9,13 @@ import mjml2html from 'mjml'
 import mustache from 'mustache'
 import fs from 'node:fs'
 import path from 'node:path'
-import { isValidFilePath, safeParseJSON } from '../utils/fs'
+import { safeParseJSON, safeReadFile } from '../utils/fs'
 import {
   compileSchemaToTypescriptInterface,
   getInterfaceNameFromFilePath,
-  getJSONSchema,
 } from '../utils/jsonSchema'
 import { TemplateSnapshot as SharedTemplateSnapshot } from './types'
+import { explore } from './explore'
 
 interface VariablesBag {
   id: string
@@ -28,77 +28,55 @@ interface Preview {
   html: string
 }
 
-interface TemplateSnapshot extends SharedTemplateSnapshot{
+interface TemplateSnapshot extends SharedTemplateSnapshot {
   schema: AnySchema | null
-}
-
-interface ConfigResult {
-  title: string | null
-  type: 'template' | 'layout'
-  schema: AnySchema | null
-  warning: string | null
-  error: string | null
 }
 
 export class Template {
   private workspacePath: string
   private folderPath: string
   private mjmlPath: string
+  private mjmlContent: string = ''
+  private title: string | null = null
+  private type: 'template' | 'layout' = 'template'
+  private schema: AnySchema | null = null
+  private layoutPath: string | null = null
+  private layoutContent: string | null = null
+  private regexps: RegExp[] = []
+
+  private errors: string[] = []
+  private warnings: string[] = []
 
   constructor(workspacePath: string, mjmlPath: string) {
     this.workspacePath = workspacePath
     this.mjmlPath = mjmlPath
     this.folderPath = path.dirname(mjmlPath)
+
+    this.setup()
+  }
+
+  setup() {
+    const { title, type, schema, layout, regexps, errors, warnings } = explore(
+      this.mjmlPath,
+      this.workspacePath,
+    )
+    this.title = title
+    this.type = type
+    this.schema = schema
+    this.layoutPath = layout
+    this.regexps = regexps
+    this.errors = errors
+    this.warnings = warnings
+    this.mjmlContent = safeReadFile(this.mjmlPath)
+    this.layoutContent = layout ? safeReadFile(layout) : null
   }
 
   isFileUpdateRelevant(filePath: string): boolean {
-    const fileFolder = path.dirname(filePath)
-    return fileFolder === this.folderPath
+    return this.regexps.some(regexp => regexp.test(filePath))
   }
 
   get mjmPath(): string {
     return this.mjmlPath
-  }
-
-  getConfig(mjmlContent: string): ConfigResult {
-    const contentContainsContentPlaceholder = this.containsContentPlaceholder(mjmlContent)
-    const configPath = path.join(this.folderPath, 'config.json')
-    const fileExists = isValidFilePath(configPath)
-    const relativePath = path.relative(this.workspacePath, configPath)
-
-    if (!fileExists) {
-      return {
-        title: null,
-        type: contentContainsContentPlaceholder? 'layout' : 'template',
-        schema: null,
-        error: null,
-        warning: `${relativePath} does not exist`,
-      }
-    }
-
-    const configContent = safeParseJSON(configPath)
-    if (!configContent) {
-      return {
-        title: null,
-        type: contentContainsContentPlaceholder? 'layout' : 'template',
-        schema: null,
-        warning: null,
-        error: `${relativePath} is not a valid JSON file`,
-      }
-    }
-
-    const result = getJSONSchema(configContent.schema)
-
-    return {
-      title: configContent.title ?? null,
-      type: configContent.type === 'layout' ? 'layout' : 'template',
-      schema: result,
-      warning: null,
-      error:
-        configContent.schema && !result
-          ? `Property "schema" in ${relativePath} is not a valid JSON schema`
-          : null,
-    }
   }
 
   getLocaleFromFilename(filename: string): string {
@@ -106,13 +84,20 @@ export class Template {
     return match ? match[1] : 'default'
   }
 
-  getVariableFiles(folderPath: string): string[] {
-    const pattern = `${folderPath}/variables{,.+([a-zA-Z-_])}.json`
-    return globSync(pattern)
-  }
-
   getVariableBags(): VariablesBag[] {
-    const variablesPaths = this.getVariableFiles(this.folderPath)
+    const pattern = `${this.folderPath}/variables{,.+([a-zA-Z-_])}.json`
+    const variablesPaths = globSync(pattern)
+
+    if (variablesPaths.length === 0) {
+      return [
+        {
+          id: 'default',
+          variables: {},
+          error: null,
+        },
+      ]
+    }
+
     return variablesPaths.map(variablesPath => {
       const variables = safeParseJSON(variablesPath)
 
@@ -126,113 +111,125 @@ export class Template {
     })
   }
 
-  containsContentPlaceholder(input: string): boolean {
-    const pattern = /\{\{\{\s*content\s*\}\}\}/;
-    return pattern.test(input);
+  getPreviewWithinLayout(id: string, content: string) {
+    if (!this.layoutContent || !this.layoutPath) {
+      return content
+    }
+
+    const defaultVariablesPath = path.join(
+      path.dirname(this.layoutPath),
+      'variables.json',
+    )
+    const idVariablesPath = path.join(
+      path.dirname(this.layoutPath),
+      `variables.${id}.json`,
+    )
+
+    const previewWithinLayout = mustache.render(
+      this.layoutContent,
+      {
+        content,
+        ...safeParseJSON(defaultVariablesPath),
+        ...safeParseJSON(idVariablesPath),
+      },
+      {},
+      {
+        // Disable HTML escaping
+        escape: val => val,
+        tags: ['{{{', '}}}'],
+      },
+    )
+
+    return previewWithinLayout
   }
 
   getPreview(
-    mjmlContent: string,
-    variables: VariablesBag['variables'],
+    variableBag: VariablesBag,
     schema: AnySchema | null,
   ): string | null {
     try {
       const mjmlTemplateWithVariables = mustache.render(
-        mjmlContent,
-        variables,
+        this.mjmlContent,
+        variableBag.variables,
         {},
         {
+          // Disable HTML escaping
+          escape: val => val,
           tags: ['{{{', '}}}'],
         },
       )
 
-      if (!schema) {
-        return mjml2html(mjmlTemplateWithVariables).html
-      }
-
       jsonSchemaFakerSetOption('useExamplesValue', true)
-      const fakeData = jsonSchemaFakerGenerate(schema as JSONSchema)
+      const fakeData = schema
+        ? jsonSchemaFakerGenerate(schema as JSONSchema)
+        : {}
 
       const mjmlTemplateWithVariablesAndSchema = mustache.render(
         mjmlTemplateWithVariables,
         fakeData,
         {},
         {
+          // Disable HTML escaping
+          escape: val => val,
           tags: ['{{', '}}'],
         },
       )
 
-      return mjml2html(mjmlTemplateWithVariablesAndSchema).html
+      return mjml2html(
+        this.getPreviewWithinLayout(
+          variableBag.id,
+          mjmlTemplateWithVariablesAndSchema,
+        ),
+      ).html
     } catch (error) {
       return null
     }
   }
 
   async getSnapshot(): Promise<TemplateSnapshot> {
-    const errorMessages: string[] = []
-    const warningMessages: string[] = []
+    this.setup()
 
-    const mjmlContent = fs.readFileSync(this.mjmlPath, 'utf-8')
+    const errorMessages: string[] = [...this.errors]
+    const warningMessages: string[] = [...this.warnings]
+
     const variableBags = this.getVariableBags()
-
-    const { title, schema, error, type, warning } = this.getConfig(mjmlContent)
-    if (error) {
-      errorMessages.push(error)
-    }
-    if (warning) {
-      warningMessages.push(warning)
-    }
 
     const previews: Preview[] = []
 
-    if (variableBags.length === 0) {
-      const preview = this.getPreview(mjmlContent, {}, schema)
+    variableBags.forEach(variableBag => {
+      if (variableBag.error) {
+        errorMessages.push(variableBag.error)
+        return
+      }
+
+      const preview = this.getPreview(variableBag, this.schema)
+
       if (!preview) {
-        errorMessages.push('Failed to render default HTML preview')
+        errorMessages.push(`Failed to render ${variableBag.id} HTML preview`)
       }
 
       previews.push({
-        id: 'default',
+        id: variableBag.id,
         html: preview ?? '',
       })
-    } else {
-      variableBags.forEach(({ id, variables, error }) => {
-        if (error) {
-          errorMessages.push(error)
-          return
-        }
-
-        const preview = this.getPreview(mjmlContent, variables, schema)
-        const fileName =
-          id === 'default' ? 'variables.json' : `variables.${id}.json`
-
-        if (!preview) {
-          errorMessages.push(`Failed to render HTML preview for ${fileName}`)
-        }
-
-        previews.push({
-          id,
-          html: preview ?? '',
-        })
-      })
-    }
+    })
 
     const relativePath = path.relative(this.workspacePath, this.mjmlPath)
 
     let schemaInterface: string | null = null
 
-    if (schema) {
+    if (this.schema) {
       schemaInterface = await compileSchemaToTypescriptInterface(
-        schema,
+        this.schema,
         getInterfaceNameFromFilePath(relativePath),
       )
     }
 
     return {
-      title,
-      type,
+      title: this.title,
+      type: this.type,
       path: relativePath,
-      schema,
+      schema: this.schema,
       schemaInterface,
       previews,
       errorMessages,

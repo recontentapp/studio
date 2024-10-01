@@ -13,6 +13,11 @@ export interface TemplateSnapshot {
   warningMessages: string[]
 }
 
+interface TemplateAddedEvent {
+  type: 'template-added'
+  template: TemplateSnapshot
+}
+
 interface TemplateUpdatedEvent {
   type: 'template-updated'
   template: TemplateSnapshot
@@ -25,4 +30,4 @@ interface TemplateDeletedEvent {
   }
 }
 
-export type Event = TemplateUpdatedEvent | TemplateDeletedEvent
+export type Event = TemplateAddedEvent| TemplateUpdatedEvent | TemplateDeletedEvent

@@ -42,9 +42,15 @@ export const EditorSettings = ({ template }: Props) => {
           <DataList.Item align="center">
             <DataList.Label minWidth="88px">Type</DataList.Label>
             <DataList.Value>
+              {template.type === 'layout' ? (
+              <Badge color="teal" variant="soft" radius="full">
+                Layout
+              </Badge>
+              ) : (
               <Badge color="iris" variant="soft" radius="full">
                 Template
               </Badge>
+              )}
             </DataList.Value>
           </DataList.Item>
           <DataList.Item>
