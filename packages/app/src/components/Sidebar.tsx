@@ -1,8 +1,26 @@
-import { Flex, Text } from '@radix-ui/themes'
-import { PropsWithChildren } from 'react'
+import { Box, Flex, RadioCards, Tabs, Text } from '@radix-ui/themes'
 import { GettingStartedDialog } from './GettingStartedDialog'
+import { TemplateSnapshot } from '../../../cli/src/studio/types'
+import { useMemo } from 'react'
 
-export const Sidebar = ({ children }: PropsWithChildren) => {
+interface Props {
+  currentTemplatePath?: string
+  data: TemplateSnapshot[]
+  onChange: (path: string) => void
+}
+
+const HEADER_HEIGHT = 52
+const FOOTER_HEIGHT = 74
+const TABS_LIST_HEIGHT = 40
+const LIST_HEIGHT = `calc(100vh - ${HEADER_HEIGHT + FOOTER_HEIGHT + TABS_LIST_HEIGHT}px)`
+
+export const Sidebar = ({ currentTemplatePath, onChange, data }: Props) => {
+  const templates = useMemo(
+    () => data.filter(t => t.type === 'template'),
+    [data],
+  )
+  const layouts = useMemo(() => data.filter(t => t.type === 'layout'), [data])
+
   return (
     <Flex
       direction="column"
@@ -10,9 +28,10 @@ export const Sidebar = ({ children }: PropsWithChildren) => {
       width="270px"
       height="100vh"
       flexShrink="0"
-      style={{ borderRight: '1px solid var(--gray-3)' }}
+      style={{ borderRight: '1px solid var(--gray-a5)' }}
     >
       <Flex
+        height={`${HEADER_HEIGHT}px`}
         direction="row"
         align="center"
         gap="2"
@@ -46,17 +65,122 @@ export const Sidebar = ({ children }: PropsWithChildren) => {
         </Text>
       </Flex>
 
-      <Flex direction="column" width="100%" flexGrow="1" overflowY="auto" px="3" pb="4" gap="3">
-        {children}
+      <Flex direction="column" flexGrow="1">
+        <Tabs.Root defaultValue="templates">
+          <Tabs.List style={{ height: `${TABS_LIST_HEIGHT}px` }}>
+            <Tabs.Trigger value="templates">Templates</Tabs.Trigger>
+            <Tabs.Trigger value="layouts">Layouts</Tabs.Trigger>
+          </Tabs.List>
+
+          <Tabs.Content value="templates">
+            <Flex
+              direction="column"
+              width="100%"
+              flexGrow="1"
+              overflowY="auto"
+              maxHeight={LIST_HEIGHT}
+              p="3"
+              gap="3"
+            >
+              {templates.map(template => (
+                <RadioCards.Root
+                  value={currentTemplatePath ?? ''}
+                  size="1"
+                  key={template.path}
+                  variant="surface"
+                  onValueChange={() => onChange(template.path)}
+                >
+                  <RadioCards.Item value={template.path}>
+                    <Flex width="100%" direction="column">
+                      <Text
+                        weight="medium"
+                        size="2"
+                        style={{
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {template.title ?? 'Untitled'}
+                      </Text>
+                      <Text
+                        size="1"
+                        style={{
+                          color: 'var(--gray-10)',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {template.path}
+                      </Text>
+                    </Flex>
+                  </RadioCards.Item>
+                </RadioCards.Root>
+              ))}
+            </Flex>
+          </Tabs.Content>
+
+          <Tabs.Content value="layouts">
+            <Flex
+              direction="column"
+              width="100%"
+              flexGrow="1"
+              overflowY="auto"
+              maxHeight={LIST_HEIGHT}
+              p="3"
+              gap="3"
+            >
+              {layouts.map(template => (
+                <RadioCards.Root
+                  value={currentTemplatePath ?? ''}
+                  size="1"
+                  key={template.path}
+                  variant="surface"
+                  onValueChange={() => onChange(template.path)}
+                >
+                  <RadioCards.Item value={template.path}>
+                    <Flex width="100%" direction="column">
+                      <Text
+                        weight="medium"
+                        size="2"
+                        style={{
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {template.title ?? 'Untitled'}
+                      </Text>
+                      <Text
+                        size="1"
+                        style={{
+                          color: 'var(--gray-10)',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {template.path}
+                      </Text>
+                    </Flex>
+                  </RadioCards.Item>
+                </RadioCards.Root>
+              ))}
+            </Flex>
+          </Tabs.Content>
+        </Tabs.Root>
       </Flex>
 
       <Flex
-        p="3"
+        height={`${FOOTER_HEIGHT}px`}
         style={{
-          borderTop: '1px solid var(--gray-3)',
+          borderTop: '1px solid var(--gray-a5)',
         }}
       >
-        <GettingStartedDialog />
+        <Box width="100%" height="100%" p="3">
+          <GettingStartedDialog />
+        </Box>
       </Flex>
     </Flex>
   )

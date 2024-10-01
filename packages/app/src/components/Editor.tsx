@@ -101,7 +101,7 @@ export const Editor = ({ template }: Props) => {
         style={{
           height: TOOLBAR_HEIGHT,
           backgroundColor: 'var(--color-background)',
-          borderBottom: '1px solid var(--gray-3)',
+          borderBottom: '1px solid var(--gray-a5)',
           zIndex: 5,
         }}
       >

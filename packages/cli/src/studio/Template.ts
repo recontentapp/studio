@@ -15,6 +15,7 @@ import {
   getInterfaceNameFromFilePath,
   getJSONSchema,
 } from '../utils/jsonSchema'
+import { TemplateSnapshot as SharedTemplateSnapshot } from './types'
 
 interface VariablesBag {
   id: string
@@ -27,18 +28,13 @@ interface Preview {
   html: string
 }
 
-interface TemplateSnapshot {
-  path: string
-  title: string | null
+interface TemplateSnapshot extends SharedTemplateSnapshot{
   schema: AnySchema | null
-  schemaInterface: string | null
-  previews: Preview[]
-  warningMessages: string[]
-  errorMessages: string[]
 }
 
 interface ConfigResult {
   title: string | null
+  type: 'template' | 'layout'
   schema: AnySchema | null
   warning: string | null
   error: string | null
@@ -64,16 +60,16 @@ export class Template {
     return this.mjmlPath
   }
 
-  getConfig(): ConfigResult {
+  getConfig(mjmlContent: string): ConfigResult {
+    const contentContainsContentPlaceholder = this.containsContentPlaceholder(mjmlContent)
     const configPath = path.join(this.folderPath, 'config.json')
-
     const fileExists = isValidFilePath(configPath)
-
     const relativePath = path.relative(this.workspacePath, configPath)
 
     if (!fileExists) {
       return {
         title: null,
+        type: contentContainsContentPlaceholder? 'layout' : 'template',
         schema: null,
         error: null,
         warning: `${relativePath} does not exist`,
@@ -84,6 +80,7 @@ export class Template {
     if (!configContent) {
       return {
         title: null,
+        type: contentContainsContentPlaceholder? 'layout' : 'template',
         schema: null,
         warning: null,
         error: `${relativePath} is not a valid JSON file`,
@@ -94,6 +91,7 @@ export class Template {
 
     return {
       title: configContent.title ?? null,
+      type: configContent.type === 'layout' ? 'layout' : 'template',
       schema: result,
       warning: null,
       error:
@@ -126,6 +124,11 @@ export class Template {
           : `${path.relative(this.workspacePath, variablesPath)} is not a valid JSON file`,
       }
     })
+  }
+
+  containsContentPlaceholder(input: string): boolean {
+    const pattern = /\{\{\{\s*content\s*\}\}\}/;
+    return pattern.test(input);
   }
 
   getPreview(
@@ -172,7 +175,7 @@ export class Template {
     const mjmlContent = fs.readFileSync(this.mjmlPath, 'utf-8')
     const variableBags = this.getVariableBags()
 
-    const { title, schema, error, warning } = this.getConfig()
+    const { title, schema, error, type, warning } = this.getConfig(mjmlContent)
     if (error) {
       errorMessages.push(error)
     }
@@ -227,6 +230,7 @@ export class Template {
 
     return {
       title,
+      type,
       path: relativePath,
       schema,
       schemaInterface,

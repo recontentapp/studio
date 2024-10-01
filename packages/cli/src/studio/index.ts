@@ -30,14 +30,14 @@ export class Studio {
     app.use(cors())
     app.use(express.static('public'))
 
-    app.get('/templates', async (req, res) => {
+    app.get('/data', async (req, res) => {
       const templates = await Promise.all(
         this.templates.map(template => template.getSnapshot()),
       )
 
       res.json({
         workspacePath: this.workspacePath,
-        data: templates,
+        templates,
       })
     })
 

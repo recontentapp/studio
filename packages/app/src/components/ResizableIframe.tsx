@@ -78,6 +78,7 @@ export const ResizableIframe = ({ size, srcDoc, onSizeChange }: Props) => {
           justifyContent: 'center',
         }}
         resizeRatio={[2, 1]}
+        maxWidth={window.innerWidth - 400}
         handleStyles={{
           topLeft: { display: 'none' },
           topRight: { display: 'none' },

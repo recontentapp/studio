@@ -5,6 +5,7 @@ interface Preview {
 
 export interface TemplateSnapshot {
   title: string | null
+  type: 'template' | 'layout'
   path: string
   previews: Preview[]
   schemaInterface: string | null

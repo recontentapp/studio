@@ -1,4 +1,4 @@
-import { Flex, RadioCards, Spinner, Text } from '@radix-ui/themes'
+import { Flex, Spinner } from '@radix-ui/themes'
 import { useEffect, useMemo, useState } from 'react'
 import { Container } from './components/Container'
 import { Editor } from './components/Editor'
@@ -8,21 +8,23 @@ import { useStore } from './hooks/useStore'
 
 export const App = () => {
   const { workspacePath, templates, initialized } = useStore()
-  const [currentIndex, setCurrentIndex] = useState<number | null>(null)
+  const [currentTemplatePath, setCurrentTemplatePath] = useState<string | null>(
+    null,
+  )
 
   useEffect(() => {
     if (templates.length > 0) {
-      setCurrentIndex(null)
+      setCurrentTemplatePath(null)
     }
   }, [templates.length])
 
   const currentTemplate = useMemo(() => {
-    if (currentIndex === null) {
+    if (currentTemplatePath === null) {
       return null
     }
 
-    return templates[currentIndex]
-  }, [templates, currentIndex])
+    return templates.find(t => t.path === currentTemplatePath) ?? null
+  }, [templates, currentTemplatePath])
 
   if (!initialized) {
     return (
@@ -38,44 +40,11 @@ export const App = () => {
 
   return (
     <Container>
-      <Sidebar>
-        {templates.map((template, index) => (
-          <RadioCards.Root
-            value={currentTemplate?.path ?? ''}
-            size="1"
-            key={template.path}
-            variant="surface"
-            onValueChange={() => setCurrentIndex(index)}
-          >
-            <RadioCards.Item value={template.path}>
-              <Flex width="100%" direction="column">
-                <Text
-                  weight="medium"
-                  size="2"
-                  style={{
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
-                >
-                  {template.title ?? 'Untitled'}
-                </Text>
-                <Text
-                  size="1"
-                  style={{
-                    color: 'var(--gray-10)',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
-                >
-                  {template.path}
-                </Text>
-              </Flex>
-            </RadioCards.Item>
-          </RadioCards.Root>
-        ))}
-      </Sidebar>
+      <Sidebar
+        data={templates}
+        onChange={setCurrentTemplatePath}
+        currentTemplatePath={currentTemplate?.path}
+      />
 
       <Flex flexGrow="1" height="100%">
         {currentTemplate ? (

@@ -16,10 +16,10 @@ export const useStore = () => {
 
     oneOff.current = true
 
-    fetch([baseURL, '/templates'].join(''))
+    fetch([baseURL, '/data'].join(''))
       .then(res => res.json())
       .then(data => {
-        setTemplates(data.data)
+        setTemplates(data.templates)
         setWorkspacePath(data.workspacePath)
         setInitialized(true)
       })
