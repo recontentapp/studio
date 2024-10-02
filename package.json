@@ -11,8 +11,8 @@
     "prepare": "husky",
     "prettier:lint": "prettier -c .",
     "prettier:fix": "prettier -w .",
-    "dev:cli": "yarn workspace @recontentapp/studio dev",
-    "dev:app": "yarn workspace app dev",
+    "dev:studio": "yarn workspace @recontentapp/studio dev",
+    "dev:studio-app": "yarn workspace @recontentapp/studio-app dev",
     "build:app": "yarn workspace app build && rm -rf packages/cli/public && cp -r packages/app/dist packages/cli/public"
   },
   "devDependencies": {
