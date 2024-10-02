@@ -7,7 +7,6 @@ import {
 import { JSONSchema } from 'json-schema-to-typescript'
 import mjml2html from 'mjml'
 import mustache from 'mustache'
-import fs from 'node:fs'
 import path from 'node:path'
 import { safeParseJSON, safeReadFile } from '../utils/fs'
 import {
@@ -17,9 +16,9 @@ import {
 import { TemplateSnapshot as SharedTemplateSnapshot } from './types'
 import { explore } from './explore'
 
-interface VariablesBag {
+interface ContentBag {
   id: string
-  variables: Record<string, string>
+  content: Record<string, string>
   error: string | null
 }
 
@@ -80,33 +79,33 @@ export class Template {
   }
 
   getLocaleFromFilename(filename: string): string {
-    const match = filename.match(/variables\.(\w+)\.json/)
+    const match = filename.match(/content\.(\w+)\.json/)
     return match ? match[1] : 'default'
   }
 
-  getVariableBags(): VariablesBag[] {
-    const pattern = `${this.folderPath}/variables{,.+([a-zA-Z-_])}.json`
-    const variablesPaths = globSync(pattern)
+  getContentBags(): ContentBag[] {
+    const pattern = `${this.folderPath}/content{,.+([a-zA-Z-_])}.json`
+    const contentFilePaths = globSync(pattern)
 
-    if (variablesPaths.length === 0) {
+    if (contentFilePaths.length === 0) {
       return [
         {
           id: 'default',
-          variables: {},
+          content: {},
           error: null,
         },
       ]
     }
 
-    return variablesPaths.map(variablesPath => {
-      const variables = safeParseJSON(variablesPath)
+    return contentFilePaths.map(contentPath => {
+      const content = safeParseJSON(contentPath)
 
       return {
-        id: this.getLocaleFromFilename(path.basename(variablesPath)),
-        variables: variables ?? {},
-        error: variables
+        id: this.getLocaleFromFilename(path.basename(contentPath)),
+        content: content ?? {},
+        error: content
           ? null
-          : `${path.relative(this.workspacePath, variablesPath)} is not a valid JSON file`,
+          : `${path.relative(this.workspacePath, contentPath)} is not a valid JSON file`,
       }
     })
   }
@@ -116,21 +115,21 @@ export class Template {
       return content
     }
 
-    const defaultVariablesPath = path.join(
+    const defaultContentPath = path.join(
       path.dirname(this.layoutPath),
-      'variables.json',
+      'content.json',
     )
-    const idVariablesPath = path.join(
+    const idContentPath = path.join(
       path.dirname(this.layoutPath),
-      `variables.${id}.json`,
+      `content.${id}.json`,
     )
 
     const previewWithinLayout = mustache.render(
       this.layoutContent,
       {
         content,
-        ...safeParseJSON(defaultVariablesPath),
-        ...safeParseJSON(idVariablesPath),
+        ...safeParseJSON(defaultContentPath),
+        ...safeParseJSON(idContentPath),
       },
       {},
       {
@@ -143,14 +142,11 @@ export class Template {
     return previewWithinLayout
   }
 
-  getPreview(
-    variableBag: VariablesBag,
-    schema: AnySchema | null,
-  ): string | null {
+  getPreview(contentBag: ContentBag, schema: AnySchema | null): string | null {
     try {
-      const mjmlTemplateWithVariables = mustache.render(
+      const mjmlTemplateWithContent = mustache.render(
         this.mjmlContent,
-        variableBag.variables,
+        contentBag.content,
         {},
         {
           // Disable HTML escaping
@@ -164,8 +160,8 @@ export class Template {
         ? jsonSchemaFakerGenerate(schema as JSONSchema)
         : {}
 
-      const mjmlTemplateWithVariablesAndSchema = mustache.render(
-        mjmlTemplateWithVariables,
+      const mjmlTemplateWithContentAndSchema = mustache.render(
+        mjmlTemplateWithContent,
         fakeData,
         {},
         {
@@ -177,8 +173,8 @@ export class Template {
 
       return mjml2html(
         this.getPreviewWithinLayout(
-          variableBag.id,
-          mjmlTemplateWithVariablesAndSchema,
+          contentBag.id,
+          mjmlTemplateWithContentAndSchema,
         ),
       ).html
     } catch (error) {
@@ -192,24 +188,24 @@ export class Template {
     const errorMessages: string[] = [...this.errors]
     const warningMessages: string[] = [...this.warnings]
 
-    const variableBags = this.getVariableBags()
+    const contentBags = this.getContentBags()
 
     const previews: Preview[] = []
 
-    variableBags.forEach(variableBag => {
-      if (variableBag.error) {
-        errorMessages.push(variableBag.error)
+    contentBags.forEach(contentBag => {
+      if (contentBag.error) {
+        errorMessages.push(contentBag.error)
         return
       }
 
-      const preview = this.getPreview(variableBag, this.schema)
+      const preview = this.getPreview(contentBag, this.schema)
 
       if (!preview) {
-        errorMessages.push(`Failed to render ${variableBag.id} HTML preview`)
+        errorMessages.push(`Failed to render ${contentBag.id} HTML preview`)
       }
 
       previews.push({
-        id: variableBag.id,
+        id: contentBag.id,
         html: preview ?? '',
       })
     })

@@ -13,7 +13,7 @@ export const explore = (sourcePath: string, workspacePath: string) => {
   const regexps: RegExp[] = [new RegExp(`^${sourcePath}$`)]
 
   const folderPath = path.dirname(sourcePath)
-  regexps.push(new RegExp(`^${folderPath}/variables(\\.[a-z_-]+)?\\.json$`))
+  regexps.push(new RegExp(`^${folderPath}/content(\\.[a-z_-]+)?\\.json$`))
 
   const configPath = path.join(folderPath, 'config.json')
   const relativeConfigPath = path.relative(workspacePath, configPath)
@@ -53,7 +53,7 @@ export const explore = (sourcePath: string, workspacePath: string) => {
       layout = layoutPath
       regexps.push(new RegExp(`^${layoutPath}$`))
       regexps.push(
-        new RegExp(`^${layoutFolderPath}/variables(\\.[a-z_-]+)?\\.json$`),
+        new RegExp(`^${layoutFolderPath}/content(\\.[a-z_-]+)?\\.json$`),
       )
     }
   }

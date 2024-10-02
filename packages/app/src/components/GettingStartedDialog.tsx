@@ -14,12 +14,12 @@ const folderStructure = `.
 │   └── default
 │       ├── config.json
 │       ├── template.mjml
-│       └── variables.json
+│       └── content.json
 └── welcome
     ├── config.json
     ├── template.mjml
-    ├── variables.en.json
-    └── variables.fr.json`
+    ├── content.en.json
+    └── content.fr.json`
 
 const configFile = `{
   "name": "Welcome email",
@@ -37,7 +37,7 @@ const configFile = `{
   }
 }`
 
-const variablesExample = `<mj-text>{{{ name }}}</mj-text>`
+const contentExample = `<mj-text>{{{ name }}}</mj-text>`
 
 const schemaTypescriptExample = `interface WelcomeEmail {
   name: string
@@ -103,8 +103,8 @@ export const GettingStartedDialog = () => {
               Folder structure
             </Tabs.Trigger>
             <Tabs.Trigger value="config">Config file</Tabs.Trigger>
-            <Tabs.Trigger value="variables">Variables</Tabs.Trigger>
-            <Tabs.Trigger value="schema">JSON schema</Tabs.Trigger>
+            <Tabs.Trigger value="content">Content</Tabs.Trigger>
+            <Tabs.Trigger value="schema">Variables</Tabs.Trigger>
             <Tabs.Trigger value="compile">Compile</Tabs.Trigger>
           </Tabs.List>
 
@@ -112,7 +112,7 @@ export const GettingStartedDialog = () => {
             <Tabs.Content value="folder_structure">
               <Flex gap="3" direction="column">
                 <Text size="2">
-                  Templates & layouts are organized in folders. Variables can be
+                  Templates & layouts are organized in folders. Content can be
                   localized.
                 </Text>
 
@@ -154,10 +154,10 @@ export const GettingStartedDialog = () => {
               </Flex>
             </Tabs.Content>
 
-            <Tabs.Content value="variables">
+            <Tabs.Content value="content">
               <Flex gap="3" direction="column">
                 <Text size="2">
-                  Variables are stored in JSON files & can be used using the{' '}
+                  Content is stored in JSON files & can be used using the{' '}
                   <Code>{'{{{ name }}}'}</Code> syntax.
                 </Text>
 
@@ -171,7 +171,7 @@ export const GettingStartedDialog = () => {
                     borderRadius: 'var(--radius-2)',
                   }}
                 >
-                  {variablesExample}
+                  {contentExample}
                 </pre>
               </Flex>
             </Tabs.Content>
@@ -179,7 +179,7 @@ export const GettingStartedDialog = () => {
             <Tabs.Content value="schema">
               <Flex gap="3" direction="column">
                 <Text size="2">
-                  The schema allows passing data to the template. It uses{' '}
+                  The schema allows passing variables to the template. It uses{' '}
                   <Link
                     href="https://mustache.github.io/mustache.5.html"
                     target="_blank"
