@@ -17,6 +17,7 @@
     "recontent": "dist/index.js"
   },
   "dependencies": {
+    "@recontentapp/email-renderer": "*",
     "ajv": "8.17.1",
     "chalk": "4.1.2",
     "chokidar": "4.0.1",

@@ -1,0 +1,32 @@
+{
+  "name": "@recontentapp/email-renderer",
+  "version": "0.1.0",
+  "license": "AGPL-3.0-only",
+  "private": false,
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build:src": "esbuild src/index.ts --bundle --platform=node --packages=external --analyze --outfile=dist/index.js",
+    "build:types": "tsc --emitDeclarationOnly --declaration --declarationDir ./dist",
+    "build": "rm -rf dist && yarn build:src && yarn build:types"
+  },
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://github.com/recontentapp/studio",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/recontentapp/studio"
+  },
+  "dependencies": {
+    "mjml": "4.15.3",
+    "mustache": "4.2.0"
+  },
+  "devDependencies": {
+    "@types/mjml": "4.7.4",
+    "@types/mustache": "4.2.5",
+    "@types/node": "20.12.7",
+    "esbuild": "0.24.0",
+    "typescript": "5.6.2"
+  }
+}

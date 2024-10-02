@@ -5,7 +5,6 @@ import {
   option as jsonSchemaFakerSetOption,
 } from 'json-schema-faker'
 import { JSONSchema } from 'json-schema-to-typescript'
-import mjml2html from 'mjml'
 import mustache from 'mustache'
 import path from 'node:path'
 import { safeParseJSON, safeReadFile } from '../utils/fs'
@@ -15,6 +14,7 @@ import {
 } from '../utils/jsonSchema'
 import { TemplateSnapshot as SharedTemplateSnapshot } from './types'
 import { explore } from './explore'
+import { renderEmail } from '@recontentapp/email-renderer'
 
 interface ContentBag {
   id: string
@@ -155,28 +155,20 @@ export class Template {
         },
       )
 
+      const finalTemplate = this.getPreviewWithinLayout(
+        contentBag.id,
+        mjmlTemplateWithContent,
+      )
+
       jsonSchemaFakerSetOption('useExamplesValue', true)
       const fakeData = schema
         ? jsonSchemaFakerGenerate(schema as JSONSchema)
         : {}
 
-      const mjmlTemplateWithContentAndSchema = mustache.render(
-        mjmlTemplateWithContent,
-        fakeData,
-        {},
-        {
-          // Disable HTML escaping
-          escape: val => val,
-          tags: ['{{', '}}'],
-        },
-      )
-
-      return mjml2html(
-        this.getPreviewWithinLayout(
-          contentBag.id,
-          mjmlTemplateWithContentAndSchema,
-        ),
-      ).html
+      return renderEmail({
+        template: finalTemplate,
+        data: fakeData,
+      })
     } catch (error) {
       return null
     }
