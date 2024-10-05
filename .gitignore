@@ -187,4 +187,4 @@ dist
 .history
 .ionide
 
-packages/cli/public/
+packages/studio/public/
