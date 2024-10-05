@@ -1,0 +1,49 @@
+name: Continuous integration
+
+on: push
+
+jobs:
+  continuous_integration:
+    name: Continuous integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-
+            ${{ runner.os }}-
+            ${{ runner.os }}-
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Typecheck email-renderer
+        run: yarn workspace @recontentapp/email-renderer typecheck
+
+      - name: Build email-renderer
+        run: yarn workspace @recontentapp/email-renderer build
+
+      - name: Typecheck studio-app
+        run: yarn workspace @recontentapp/studio-app typecheck
+
+      - name: Build studio-app
+        run: yarn workspace @recontentapp/studio-app build
+
+      - name: Typecheck studio
+        run: yarn workspace @recontentapp/studio typecheck
+
+      - name: Build studio
+        run: yarn workspace @recontentapp/studio build

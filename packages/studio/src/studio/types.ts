@@ -30,4 +30,7 @@ interface TemplateDeletedEvent {
   }
 }
 
-export type Event = TemplateAddedEvent| TemplateUpdatedEvent | TemplateDeletedEvent
+export type Event =
+  | TemplateAddedEvent
+  | TemplateUpdatedEvent
+  | TemplateDeletedEvent

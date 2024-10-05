@@ -1,6 +1,6 @@
 import { Box, Flex, RadioCards, Tabs, Text } from '@radix-ui/themes'
 import { GettingStartedDialog } from './GettingStartedDialog'
-import { TemplateSnapshot } from '../../../cli/src/studio/types'
+import { TemplateSnapshot } from '../../../studio/src/studio/types'
 import { useMemo } from 'react'
 
 interface Props {

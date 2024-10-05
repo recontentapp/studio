@@ -28,13 +28,16 @@
   <mj-body background-color="#F1F5F9">
     <mj-section padding="20px"></mj-section>
 
-    <mj-wrapper background-color="#ffffff">
-      {{{ content }}}
-    </mj-wrapper>
+    <mj-wrapper background-color="#ffffff"> {{{ content }}} </mj-wrapper>
 
     <mj-section background-color="#F6F9FC" padding="40px 64px">
       <mj-column width="100%">
-        <mj-image align="left" src="https://raw.githubusercontent.com/recontentapp/mjml-templates/master/templates/stripe-notification/assets/gray-logo.png" alt="" width="42px" />
+        <mj-image
+          align="left"
+          src="https://raw.githubusercontent.com/recontentapp/mjml-templates/master/templates/stripe-notification/assets/gray-logo.png"
+          alt=""
+          width="42px"
+        />
       </mj-column>
     </mj-section>
     <mj-section padding="30px"></mj-section>

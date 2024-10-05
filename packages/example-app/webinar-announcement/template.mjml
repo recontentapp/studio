@@ -1,6 +1,11 @@
 <mj-section padding="50px 64px 30px 64px">
   <mj-column width="100%">
-    <mj-image align="left" src="https://raw.githubusercontent.com/recontentapp/mjml-templates/master/templates/stripe-notification/assets/logo.png" alt="" width="86px" />
+    <mj-image
+      align="left"
+      src="https://raw.githubusercontent.com/recontentapp/mjml-templates/master/templates/stripe-notification/assets/logo.png"
+      alt=""
+      width="86px"
+    />
   </mj-column>
 </mj-section>
 
@@ -8,27 +13,27 @@
   <mj-column width="100%" padding="0px 64px 0px 64px">
     <mj-text align="left">
       <p>{{{ welcomeMessage }}}</p>
-      <p>
-        {{{ description }}}
-      </p>
+      <p>{{{ description }}}</p>
       <p><strong>{{{ listTitle }}}</strong></p>
     </mj-text>
   </mj-column>
 </mj-section>
 
 {{ #features }}
-  <mj-section padding="0px 64px 8px 64px">
-    <mj-group width="100%">
-      <mj-column width="24px" padding-top="2px">
-        <mj-image src="https://raw.githubusercontent.com/recontentapp/mjml-templates/master/templates/stripe-notification/assets/bullet.png" alt="" width="12px" />
-      </mj-column>
-      <mj-column width="85%">
-        <mj-text>
-          {{ title }}
-        </mj-text>
-      </mj-column>
-    </mj-group>
-  </mj-section>
+<mj-section padding="0px 64px 8px 64px">
+  <mj-group width="100%">
+    <mj-column width="24px" padding-top="2px">
+      <mj-image
+        src="https://raw.githubusercontent.com/recontentapp/mjml-templates/master/templates/stripe-notification/assets/bullet.png"
+        alt=""
+        width="12px"
+      />
+    </mj-column>
+    <mj-column width="85%">
+      <mj-text> {{ title }} </mj-text>
+    </mj-column>
+  </mj-group>
+</mj-section>
 {{/features}}
 
 <mj-section padding="16px 0px 0px 0px">
@@ -39,8 +44,6 @@
 
 <mj-section padding="0px 64px 40px 64px">
   <mj-column>
-    <mj-text
-      ><p>{{{ signature }}}</p></mj-text
-    >
+    <mj-text><p>{{{ signature }}}</p></mj-text>
   </mj-column>
 </mj-section>

@@ -1,5 +1,5 @@
 import { Button, Flex, Text, Tooltip } from '@radix-ui/themes'
-import { TemplateSnapshot } from '../../../cli/src/studio/types'
+import { TemplateSnapshot } from '../../../studio/src/studio/types'
 
 type Props = Pick<TemplateSnapshot, 'warningMessages' | 'errorMessages'>
 

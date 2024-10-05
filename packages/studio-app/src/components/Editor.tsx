@@ -1,6 +1,6 @@
 import { Box, Flex, SegmentedControl, Select, Text } from '@radix-ui/themes'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { TemplateSnapshot } from '../../../cli/src/studio/types'
+import { TemplateSnapshot } from '../../../studio/src/studio/types'
 import { useWindowResize } from '../hooks/useWindowResize'
 import { EditorSettings } from './EditorSettings'
 import { Indications } from './Indications'

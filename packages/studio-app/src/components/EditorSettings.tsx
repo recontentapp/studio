@@ -7,7 +7,7 @@ import {
   Flex,
   IconButton,
 } from '@radix-ui/themes'
-import { TemplateSnapshot } from '../../../cli/src/studio/types'
+import { TemplateSnapshot } from '../../../studio/src/studio/types'
 
 interface Props {
   template: TemplateSnapshot
@@ -43,13 +43,13 @@ export const EditorSettings = ({ template }: Props) => {
             <DataList.Label minWidth="88px">Type</DataList.Label>
             <DataList.Value>
               {template.type === 'layout' ? (
-              <Badge color="teal" variant="soft" radius="full">
-                Layout
-              </Badge>
+                <Badge color="teal" variant="soft" radius="full">
+                  Layout
+                </Badge>
               ) : (
-              <Badge color="iris" variant="soft" radius="full">
-                Template
-              </Badge>
+                <Badge color="iris" variant="soft" radius="full">
+                  Template
+                </Badge>
               )}
             </DataList.Value>
           </DataList.Item>

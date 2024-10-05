@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { Event, TemplateSnapshot } from '../../../cli/src/studio/types'
+import { Event, TemplateSnapshot } from '../../../studio/src/studio/types'
 
-const baseURL = process.env.NODE_ENV === 'development' ? 'http://localhost:4242' : ''
+const baseURL =
+  process.env.NODE_ENV === 'development' ? 'http://localhost:4242' : ''
 
 export const useStore = () => {
   const [workspacePath, setWorkspacePath] = useState<string>('')

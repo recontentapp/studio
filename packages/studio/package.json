@@ -4,6 +4,7 @@
   "license": "AGPL-3.0-only",
   "private": false,
   "scripts": {
+    "typecheck": "tsc --noEmit",
     "build": "esbuild src/index.ts --bundle --platform=node --packages=external --sourcemap --analyze --outfile=dist/index.js",
     "dev": "esbuild src/index.ts --bundle --platform=node --packages=external --outfile=dist/index.js --watch",
     "start": "NODE_ENV=development node dist/index.js"
