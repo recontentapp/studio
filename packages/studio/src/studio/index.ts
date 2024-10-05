@@ -28,7 +28,7 @@ export class Studio {
   private getWebServer(port: number) {
     const app = express()
     app.use(cors())
-    app.use(express.static('public'))
+    app.use(express.static(path.join(__dirname, '..', 'public')))
 
     app.get('/data', async (req, res) => {
       const templates = await Promise.all(

@@ -1,6 +1,6 @@
 {
   "name": "@recontentapp/studio",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "AGPL-3.0-only",
   "private": false,
   "scripts": {
@@ -14,11 +14,15 @@
     "type": "git",
     "url": "https://github.com/recontentapp/studio"
   },
+  "files": [
+    "dist",
+    "public"
+  ],
   "bin": {
     "recontent": "dist/index.js"
   },
   "dependencies": {
-    "@recontentapp/email-renderer": "*",
+    "@recontentapp/email-renderer": "0.1.0",
     "ajv": "8.17.1",
     "chalk": "4.1.2",
     "chokidar": "4.0.1",
