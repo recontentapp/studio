@@ -3,8 +3,8 @@ import path from 'node:path'
 import { isValidDirectoryPath } from '../utils/fs'
 import { globSync } from 'glob'
 import { Template } from '../studio/Template'
-import fs from 'fs'
 import { fileOutput } from '../compile'
+import { outputFileSync } from 'fs-extra'
 
 interface Flags {
   path: string
@@ -23,9 +23,6 @@ const compileCommand = new Command('compile')
     }
 
     const outputPath = path.join(process.cwd(), output)
-    if (!isValidDirectoryPath(outputPath)) {
-      command.error('Invalid output provided.')
-    }
 
     const files = globSync(path.dirname(workspacePath) + '/**/*.mjml')
     const templates = files
@@ -40,9 +37,10 @@ const compileCommand = new Command('compile')
       command.error('No templates found.')
     }
 
-    fs.writeFileSync(
+    outputFileSync(
       path.join(outputPath, 'emailClient.ts'),
       fileOutput(compiledTemplates),
+      'utf-8',
     )
   })
 
