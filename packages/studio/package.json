@@ -14,6 +14,11 @@
     "type": "git",
     "url": "https://github.com/recontentapp/studio"
   },
+  "keywords": [
+    "emails",
+    "email-templates",
+    "mjml"
+  ],
   "files": [
     "dist",
     "public"
