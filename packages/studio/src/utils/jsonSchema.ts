@@ -15,21 +15,17 @@ export const getJSONSchema = (schema: any) => {
   }
 }
 
-export const getInterfaceNameFromFilePath = (filePath: string): string => {
-  const parts = filePath.split(/[\/\\]/)
-
-  const fileName = parts.pop()?.split('.')[0] || ''
-
-  const pascalCaseParts = parts.concat(fileName).map(part => {
-    return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()
-  })
-
-  return pascalCaseParts.join('')
-}
-
 export const compileSchemaToTypescriptInterface = (
   schema: any,
   interfaceName: string,
 ) => {
-  return compile(schema, interfaceName, { bannerComment: '' }).catch(() => null)
+  return compile(schema, interfaceName, {
+    bannerComment: '',
+    style: { semi: false },
+  }).catch(() => null)
+}
+
+export const extractInterfaceNameFromDeclaration = (declaration: string) => {
+  const match = declaration.match(/export interface (\w+)/)
+  return match ? match[1] : null
 }

@@ -3,12 +3,12 @@ import mustache from 'mustache'
 
 interface RenderEmailParams {
   template: string
-  data: Record<string, unknown>
+  data?: any
 }
 
 export const renderEmail = ({
   template,
-  data,
+  data = {},
 }: RenderEmailParams): string | null => {
   try {
     const mjmlTemplateWithData = mustache.render(
