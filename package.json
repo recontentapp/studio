@@ -16,7 +16,7 @@
     "build:app": "yarn workspace @recontentapp/studio-app build && rm -rf packages/studio/public && cp -r packages/studio-app/dist packages/studio/public"
   },
   "devDependencies": {
-    "husky": "9.0.11",
+    "husky": "9.1.6",
     "lint-staged": "15.2.2",
     "prettier": "3.3.1"
   }
