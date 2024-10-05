@@ -5,20 +5,21 @@ import { Studio } from '../studio'
 import { getNextAvailablePort } from '../utils/net'
 
 interface Flags {
-  path: string
+  port?: string
 }
 
 const studioCommand = new Command('studio')
-  .summary('Summary')
-  .description('Description')
-  .requiredOption('-p, --path <path>', 'Path to workspace')
-  .action(async ({ path: requestedPath }: Flags, command: Command) => {
+  .description('Browse your email templates & layouts')
+  .argument('[path]', 'Path to email templates folder')
+  .option('--port <port>', 'Port to start Studio on')
+  .action(async (requestedPath: string, flags: Flags, command: Command) => {
     const workspacePath = path.join(process.cwd(), requestedPath)
     if (!isValidDirectoryPath(workspacePath)) {
       command.error('Invalid path provided.')
     }
 
-    const port = await getNextAvailablePort(4242)
+    const desiredPort = flags.port ? parseInt(flags.port) : 4242
+    const port = await getNextAvailablePort(desiredPort)
     const studio = new Studio(workspacePath, port)
 
     process.on('SIGINT', async () => {
