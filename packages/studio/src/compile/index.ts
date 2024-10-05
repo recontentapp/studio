@@ -35,7 +35,7 @@ export const fileOutput = (templates: TemplateCompileResult[]): string => {
     lines.push(`}\n`)
   }
 
-  lines.push('export const emailClient = {')
+  lines.push('export const emailRenderer = {')
 
   templates.forEach((template, index) => {
     lines.push(

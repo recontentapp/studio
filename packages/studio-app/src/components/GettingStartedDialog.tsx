@@ -21,6 +21,37 @@ const folderStructure = `.
     ├── content.en.json
     └── content.fr.json`
 
+const contentFilesExample = `// You can either use a single content file for all locales
+.
+├── config.json
+├── content.json
+└── template.mjml
+
+// Or use a content file for each locale
+.
+├── config.json
+├── content.en.json
+├── content.fr.json
+└── template.mjml
+`
+
+const layoutConfigFile = `{
+  "title": "Default layout",
+  "type": "layout"
+}`
+
+const layoutTemplateFile = `<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Helvetica, sans-serif" />
+    </mj-attributes>
+  </mj-head>
+
+  <mj-body>
+    <mj-wrapper>{{{ content }}}</mj-wrapper>
+  </mj-body>
+</mjml>`
+
 const configFile = `{
   "name": "Welcome email",
   "layout": "../layouts/default/template.mjml",
@@ -39,13 +70,6 @@ const configFile = `{
 
 const contentExample = `<mj-text>{{{ name }}}</mj-text>`
 
-const schemaTypescriptExample = `interface WelcomeEmail {
-  name: string
-  features: {
-    name: string
-  }[]
-}`
-
 const schemaExample = `<mj-section>
   <mj-column>
     <mj-text>{{ name }}</mj-text>
@@ -55,6 +79,24 @@ const schemaExample = `<mj-section>
     {{ /features }}
   </mj-column>
 </mj-section>`
+
+const emailRendererExample = `import { emailRenderer } from './generated/emailRenderer'
+
+const sendEmail = async () => {
+  const html = emailRenderer.webinarAnnouncement({
+    locale: 'en',
+    data: {
+      link: 'https://example.com',
+      features: [
+        { name: 'Feature 1' },
+        { name: 'Feature 2' },
+      ],
+    },
+  })
+
+  // TODO: Send email
+}
+`
 
 export const GettingStartedDialog = () => {
   return (
@@ -95,6 +137,7 @@ export const GettingStartedDialog = () => {
 
       <Dialog.Content
         minHeight="520px"
+        maxWidth="620px"
         style={{ display: 'flex', flexDirection: 'column' }}
       >
         <Tabs.Root defaultValue="folder_structure" style={{ flexGrow: 1 }}>
@@ -103,6 +146,7 @@ export const GettingStartedDialog = () => {
               Folder structure
             </Tabs.Trigger>
             <Tabs.Trigger value="config">Config file</Tabs.Trigger>
+            <Tabs.Trigger value="layout">Layout</Tabs.Trigger>
             <Tabs.Trigger value="content">Content</Tabs.Trigger>
             <Tabs.Trigger value="schema">Variables</Tabs.Trigger>
             <Tabs.Trigger value="compile">Compile</Tabs.Trigger>
@@ -112,8 +156,9 @@ export const GettingStartedDialog = () => {
             <Tabs.Content value="folder_structure">
               <Flex gap="3" direction="column">
                 <Text size="2">
-                  Templates & layouts are organized in folders. Content can be
-                  localized.
+                  A typical folder structure includes one folder for each
+                  template & layout. Each folder contains at least a{' '}
+                  <Code>.mjml</Code> file & a <Code>config.json</Code> file.
                 </Text>
 
                 <pre
@@ -134,9 +179,9 @@ export const GettingStartedDialog = () => {
             <Tabs.Content value="config">
               <Flex gap="3" direction="column">
                 <Text size="2">
-                  Config files contain the template's metadata like the layout
-                  to use or a JSON schema for data that can be passed to the
-                  template.
+                  The <Code>config.json</Code> file contains information about
+                  the template like its name. An optional layout & JSON schema
+                  can be specified.
                 </Text>
 
                 <pre
@@ -154,12 +199,64 @@ export const GettingStartedDialog = () => {
               </Flex>
             </Tabs.Content>
 
+            <Tabs.Content value="layout">
+              <Flex gap="3" direction="column">
+                <Text size="2">
+                  A layout template allows you to reuse the same structure
+                  across multiple templates. Make sure to use{' '}
+                  <Code>"type": "layout"</Code> in<Code>config.json</Code> &
+                  specify <Code>{'{{{ content }}}'}</Code> in the template's
+                  MJML file to render the content.
+                </Text>
+
+                <pre
+                  style={{
+                    margin: 0,
+                    fontSize: 'var(--font-size-1)',
+                    backgroundColor: 'var(--accent-a3)',
+                    color: 'var(--accent-a11)',
+                    padding: 'var(--space-4) var(--space-3)',
+                    borderRadius: 'var(--radius-2)',
+                  }}
+                >
+                  {layoutConfigFile}
+                </pre>
+
+                <pre
+                  style={{
+                    margin: 0,
+                    fontSize: 'var(--font-size-1)',
+                    backgroundColor: 'var(--accent-a3)',
+                    color: 'var(--accent-a11)',
+                    padding: 'var(--space-4) var(--space-3)',
+                    borderRadius: 'var(--radius-2)',
+                  }}
+                >
+                  {layoutTemplateFile}
+                </pre>
+              </Flex>
+            </Tabs.Content>
+
             <Tabs.Content value="content">
               <Flex gap="3" direction="column">
                 <Text size="2">
-                  Content is stored in JSON files & can be used using the{' '}
-                  <Code>{'{{{ name }}}'}</Code> syntax.
+                  Content is stored using key/value pairs in{' '}
+                  <Code>content.json</Code> files. To use a content key in your
+                  template, use the <Code>{'{{{ name }}}'}</Code> syntax.
                 </Text>
+
+                <pre
+                  style={{
+                    margin: 0,
+                    fontSize: 'var(--font-size-1)',
+                    backgroundColor: 'var(--accent-a3)',
+                    color: 'var(--accent-a11)',
+                    padding: 'var(--space-4) var(--space-3)',
+                    borderRadius: 'var(--radius-2)',
+                  }}
+                >
+                  {contentFilesExample}
+                </pre>
 
                 <pre
                   style={{
@@ -179,28 +276,19 @@ export const GettingStartedDialog = () => {
             <Tabs.Content value="schema">
               <Flex gap="3" direction="column">
                 <Text size="2">
-                  The schema allows passing variables to the template. It uses{' '}
+                  For each template, you can specify a JSON schema in{' '}
+                  <Code>config.json</Code> to render dynamic variables. It uses
+                  the{' '}
                   <Link
                     href="https://mustache.github.io/mustache.5.html"
                     target="_blank"
                   >
-                    Mustache
+                    Mustache syntax
                   </Link>{' '}
-                  with the following <Code>{'{{ name }}'}</Code> syntax.
+                  with two curly braces {'('}
+                  <Code>{'{{ name }}'}</Code>
+                  {')'} as opposed to content which uses three.
                 </Text>
-
-                <pre
-                  style={{
-                    margin: 0,
-                    fontSize: 'var(--font-size-1)',
-                    backgroundColor: 'var(--accent-a3)',
-                    color: 'var(--accent-a11)',
-                    padding: 'var(--space-4) var(--space-3)',
-                    borderRadius: 'var(--radius-2)',
-                  }}
-                >
-                  {schemaTypescriptExample}
-                </pre>
 
                 <pre
                   style={{
@@ -218,7 +306,26 @@ export const GettingStartedDialog = () => {
             </Tabs.Content>
 
             <Tabs.Content value="compile">
-              <Text size="2">TO DO</Text>
+              <Flex gap="3" direction="column">
+                <Text size="2">
+                  Using the <Code>recontent compile</Code> command, templates &
+                  layouts are compiled into a Typescript email renderer object.
+                  It can be used in your application to render emails.
+                </Text>
+
+                <pre
+                  style={{
+                    margin: 0,
+                    fontSize: 'var(--font-size-1)',
+                    backgroundColor: 'var(--accent-a3)',
+                    color: 'var(--accent-a11)',
+                    padding: 'var(--space-4) var(--space-3)',
+                    borderRadius: 'var(--radius-2)',
+                  }}
+                >
+                  {emailRendererExample}
+                </pre>
+              </Flex>
             </Tabs.Content>
           </Box>
         </Tabs.Root>

@@ -13,7 +13,7 @@
     "prettier:fix": "prettier -w .",
     "dev:studio": "yarn workspace @recontentapp/studio dev",
     "dev:studio-app": "yarn workspace @recontentapp/studio-app dev",
-    "build:app": "yarn workspace app build && rm -rf packages/cli/public && cp -r packages/app/dist packages/cli/public"
+    "build:app": "yarn workspace @recontentapp/studio-app build && rm -rf packages/studio/public && cp -r packages/studio-app/dist packages/studio/public"
   },
   "devDependencies": {
     "husky": "9.0.11",
