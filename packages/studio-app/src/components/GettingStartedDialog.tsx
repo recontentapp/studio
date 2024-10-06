@@ -13,13 +13,13 @@ const folderStructure = `.
 ├── layouts
 │   └── default
 │       ├── config.json
-│       ├── template.mjml
-│       └── content.json
-└── welcome
-    ├── config.json
-    ├── template.mjml
-    ├── content.en.json
-    └── content.fr.json`
+│       └── template.mjml
+└── templates
+    └── webinar-announcement
+        ├── config.json
+        ├── content.en.json
+        ├── content.fr.json
+        └── template.mjml`
 
 const contentFilesExample = `// You can either use a single content file for all locales
 .
@@ -54,31 +54,25 @@ const layoutTemplateFile = `<mjml>
 
 const configFile = `{
   "name": "Welcome email",
-  "layout": "../layouts/default/template.mjml",
+  "layout": "../../layouts/default/template.mjml",
   "schema": {
     "type": "object",
     "properties": {
-      "name": {
+      "link": {
         "type": "string",
-        "example": "John Doe"
+        "example": "https://example.com"
       }
     },
     "additionalProperties": false,
-    "required": ["name"]
+    "required": ["link"]
   }
 }`
 
-const contentExample = `<mj-text>{{{ name }}}</mj-text>`
+const contentExample = `<mj-text>{{{ callToAction }}}</mj-text>`
 
-const schemaExample = `<mj-section>
-  <mj-column>
-    <mj-text>{{ name }}</mj-text>
-
-    {{ #features }}
-      <mj-text>{{ name }}</mj-text>
-    {{ /features }}
-  </mj-column>
-</mj-section>`
+const schemaExample = `<mj-column>
+  <mj-button href="{{ link }}">{{{ callToAction }}}</mj-button>
+</mj-column>`
 
 const emailRendererExample = `import { emailRenderer } from './generated/emailRenderer'
 
@@ -87,10 +81,6 @@ const sendEmail = async () => {
     locale: 'en',
     data: {
       link: 'https://example.com',
-      features: [
-        { name: 'Feature 1' },
-        { name: 'Feature 2' },
-      ],
     },
   })
 
@@ -242,7 +232,8 @@ export const GettingStartedDialog = () => {
                 <Text size="2">
                   Content is stored using key/value pairs in{' '}
                   <Code>content.json</Code> files. To use a content key in your
-                  template, use the <Code>{'{{{ name }}}'}</Code> syntax.
+                  template, use the <Code>{'{{{ callToAction }}}'}</Code>{' '}
+                  syntax.
                 </Text>
 
                 <pre
@@ -286,7 +277,7 @@ export const GettingStartedDialog = () => {
                     Mustache syntax
                   </Link>{' '}
                   with two curly braces {'('}
-                  <Code>{'{{ name }}'}</Code>
+                  <Code>{'{{ link }}'}</Code>
                   {')'} as opposed to content which uses three.
                 </Text>
 

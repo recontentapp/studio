@@ -27,20 +27,24 @@ A recommended folder structure for MJML templates & layouts looks like this:
 - Each `.mjml` template belongs to a dedicated folder with its associated files
 - Reusable layouts are grouped in a separate folder
 
-To learn more, launch the studio or check out [this example project](https://github.com/recontentapp/studio/tree/master/packages/example-app).
+You can get started by scaffolding a default folder structure using the following command:
+
+```sh
+recontent new my-templates
+```
 
 ```sh
 .
 ├── layouts
-│   └── default
-│       ├── config.json
-│       ├── template.mjml
-│       └── content.json
-└── welcome
-    ├── config.json
-    ├── template.mjml
-    ├── content.en.json
-    └── content.fr.json
+│   └── default
+│       ├── config.json
+│       └── template.mjml
+└── templates
+    └── webinar-announcement
+        ├── config.json
+        ├── content.en.json
+        ├── content.fr.json
+        └── template.mjml
 ```
 
 To launch the studio, run the following command with your folder's path.
@@ -75,10 +79,6 @@ const sendEmail = async () => {
     locale: 'en',
     data: {
       link: 'https://example.com',
-      features: [
-        { name: 'Feature 1' },
-        { name: 'Feature 2' },
-      ],
     },
   })
 
