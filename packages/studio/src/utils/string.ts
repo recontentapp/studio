@@ -11,3 +11,10 @@ export const inlineString = (str: string): string => {
   }
   return str
 }
+
+export const removeTrailingSlash = (path: string): string => {
+  if (path.endsWith('/')) {
+    return path.slice(0, -1)
+  }
+  return path
+}

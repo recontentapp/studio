@@ -5,6 +5,7 @@ import { globSync } from 'glob'
 import { Template } from '../studio/Template'
 import { fileOutput } from '../compile'
 import { outputFileSync } from 'fs-extra'
+import { removeTrailingSlash } from '../utils/string'
 
 interface Flags {
   output: string
@@ -24,8 +25,8 @@ const compileCommand = new Command('compile')
       }
 
       const outputPath = path.join(process.cwd(), output)
+      const files = globSync(removeTrailingSlash(workspacePath) + '/**/*.mjml')
 
-      const files = globSync(path.dirname(workspacePath) + '/**/*.mjml')
       const templates = files
         .map(filePath => new Template(workspacePath, filePath))
         .filter(template => template.isTemplate())
